@@ -13,7 +13,7 @@ jobs:
     #if: ${{ github.event.issue.labels }}
     steps:
       - name: Check for label 'special-label'
-        run: "echo bill wuz here"
+        run: "echo ${{ github.event.issue.labels }}"
       # - name: Check for existing PR
 
 
