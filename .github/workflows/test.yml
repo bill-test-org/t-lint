@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - run: "echo ${{ github.event.issue.labels }}"
+      - run: "echo ${{ github.event.issue.labels.*.name }}"
       - name: Conditional execution
-        if: contains(github.event.issue.labels, 'bill-test-label')
+        if: contains(github.event.issue.labels.*.name, 'bill-test-label')
         run: "echo ${{ github.event.issue.labels }}"
       # - name: Check for existing PR
 
