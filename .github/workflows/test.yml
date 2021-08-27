@@ -10,7 +10,7 @@ env:
 jobs:
   open_socks_pr:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels, 'bill-test-label')
+    if: contains(${{ github.event.issue.labels }}, 'bill-test-label')
     steps:
       - run: "echo ${{ github.event.issue.labels }}"
       # - name: Check for existing PR
