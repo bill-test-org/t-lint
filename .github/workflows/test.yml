@@ -1,0 +1,31 @@
+name: Open SOCKS PR for Requesting department-of-veterans-affairs members
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled, unlabeled]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+
+jobs:
+  open_socks_pr:
+    runs-on: ubuntu-latest
+    #if: ${{ github.event.issue.labels }}
+    steps:
+      - name: Check for label 'special-label'
+        run: "echo bill wuz here"
+      # - name: Check for existing PR
+
+
+      # - name: Validate that user is in `bill-test-org` GH Org
+      #   uses: octokit/request-action@v2.1.0
+      #   id: validate_gh_org_membership
+      #   with:
+      #     route: GET /orgs/bill-test-org/members/{username}
+      #     owner: octokit
+      #     repo: request-action
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - run: "echo latest release: ${{ steps.get_latest_release.outputs.data }}"
+
+      # - name: Create PR in `devops` repo
