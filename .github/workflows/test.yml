@@ -4,9 +4,6 @@ on:
   issues:
     types: [opened]
 
-env:
-  GIT_API_TOKEN: ${{ secrets.GIT_API_TOKEN }}
-
 jobs:
   open_socks_pr:
     if: contains(github.event.issue.labels.*.name, 'bill-test-label')
@@ -18,7 +15,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
-      # - name: Check for existing PR
+
       - name: Validate that user is in `bill-test-org` GH Org
         uses: octokit/request-action@v2.1.0
         id: validate_gh_org_membership
@@ -28,6 +25,6 @@ jobs:
           org: bill-test-org
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
-      - run: "echo latest release: ${{ steps.validate_gh_org_membership.outputs.data }}"
+      - run: "echo latest release: ${{ toJson(steps.validate_gh_org_membership.outputs) }}"
 
       # - name: Create PR in `devops` repo
