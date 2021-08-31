@@ -25,6 +25,10 @@ jobs:
           org: bill-test-org
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
-      - run: "echo latest release: ${{ toJson(steps.validate_gh_org_membership.outputs) }}"
+
+      - run: |
+          echo "$RESP"
+        env:
+          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
 
       # - name: Create PR in `devops` repo
