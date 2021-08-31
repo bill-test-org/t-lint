@@ -9,31 +9,25 @@ env:
 
 jobs:
   open_socks_pr:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - run: "echo ${{ github.event.issue.labels.*.name }}"
-      - name: Conditional execution
-        if: contains(github.event.issue.labels.*.name, 'bill-test-label')
-        run: "echo ${{ github.event.issue.labels }}"
+    if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
+    runs-on: ubuntu-latest
+    steps:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
       # - name: Check for existing PR
-
-
-      # - name: Validate that user is in `bill-test-org` GH Org
-      #   uses: octokit/request-action@v2.1.0
-      #   id: validate_gh_org_membership
-      #   with:
-      #     route: GET /orgs/bill-test-org/members/{username}
-      #     owner: octokit
-      #     repo: request-action
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - run: "echo latest release: ${{ steps.get_latest_release.outputs.data }}"
+      - name: Validate that user is in `bill-test-org` GH Org
+        uses: octokit/request-action@v2.1.0
+        id: validate_gh_org_membership
+        with:
+          route: GET /orgs/{org}/members/{username} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
+          username: ${{ github.event.sender }}
+          org: bill-test-org
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: "echo latest release: ${{ steps.validate_gh_org_membership.outputs.data }}"
 
       # - name: Create PR in `devops` repo
