@@ -5,7 +5,7 @@ on:
     types: [opened]
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+  GIT_API_TOKEN: ${{ secrets.GIT_API_TOKEN }}
 
 jobs:
   open_socks_pr:
@@ -27,7 +27,7 @@ jobs:
           username: ${{ github.event.sender.login }}
           org: bill-test-org
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
       - run: "echo latest release: ${{ steps.validate_gh_org_membership.outputs.data }}"
 
       # - name: Create PR in `devops` repo
