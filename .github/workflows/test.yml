@@ -16,6 +16,12 @@ jobs:
       - name: Conditional execution
         if: contains(github.event.issue.labels.*.name, 'bill-test-label')
         run: "echo ${{ github.event.issue.labels }}"
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
       # - name: Check for existing PR
 
 
