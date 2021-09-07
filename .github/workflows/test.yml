@@ -27,10 +27,10 @@ jobs:
             let body = context.payload.pull_request.body;
 
             const re1 = /omgitsbillryan\/t-lint\/issues\/(\d+)[\s]/g;
-            const matches = body.match(re1);
-            if(matches){
+            const matches1 = body.match(re1);
+            if(matches1){
               console.log('Matched 1!')
-              matches.forEach(match => {
+              matches1.forEach(match => {
                 console.log(match)
               //  var issueId = match.trim();
               //  let issue = github.issues.get({
@@ -42,10 +42,10 @@ jobs:
             }
 
             const re2 = /omgitsbillryan\/t-lint#(\d+)[\s]/g;
-            const matches = body.match(re2);
-            if(matches){
+            const matches2 = body.match(re2);
+            if(matches2){
               console.log('Matched 2!')
-              matches.forEach(match => {
+              matches2.forEach(match => {
                 console.log(match)
               //  var issueId = match.trim();
               //  let issue = github.issues.get({
