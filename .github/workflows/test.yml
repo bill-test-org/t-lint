@@ -26,7 +26,7 @@ jobs:
           script: |
             let body = context.payload.pull_request.body;
 
-            const re1 = /department-of-veterans-affairs\/va\.gov-team\/issues\/(\d+)[\s]/g;
+            const re1 = /omgitsbillryan\/t-lint\/issues\/(\d+)[\s]/g;
             const matches = body.match(re1);
             if(matches){
               console.log('Matched 1!')
@@ -41,7 +41,7 @@ jobs:
               });
             }
 
-            const re2 = /department-of-veterans-affairs\/va\.gov-team\/issues\/(\d+)[\s]/g;
+            const re2 = /omgitsbillryan\/t-lint#(\d+)[\s]/g;
             const matches = body.match(re2);
             if(matches){
               console.log('Matched 2!')
