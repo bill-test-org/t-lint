@@ -32,6 +32,7 @@ jobs:
               console.log('Matched 1!')
               matches1.forEach(match => {
                 console.log(match)
+                console.log(match[0])
               //  var issueId = match.trim();
               //  let issue = github.issues.get({
               //    owner: 'department-of-veterans-affairs',
