@@ -26,7 +26,7 @@ jobs:
           script: |
             let body = context.payload.pull_request.body;
 
-            const re1 = /omgitsbillryan\/t-lint\/issues\/(\d+)[\s]/g;
+            const re1 = /omgitsbillryan\/t-lint\/issues\/(\d+)/;
             const matches1 = body.match(re1);
             if(matches1){
               console.log('Matched 1!');
