@@ -20,8 +20,8 @@ jobs:
         uses: octokit/request-action@v2.1.0
         id: validate_gh_org_membership
         with:
-          route: GET /orgs/{org}/members/{username} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          username: ${{ github.event.sender.login }}
+          route: GET /orgs/{org}/members/{username}
+          username: blahblah # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
           org: bill-test-org
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
