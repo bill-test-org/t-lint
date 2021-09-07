@@ -1,34 +1,75 @@
 name: Open SOCKS PR for Requesting department-of-veterans-affairs members
 
 on:
-  issues:
-    types: [opened]
+  pull_request:
+    branches:
+      - master
+  # issues:
+  #   types: [opened]
 
 jobs:
   open_socks_pr:
-    if: contains(github.event.issue.labels.*.name, 'bill-test-label')
+    # if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_CONTEXT: ${{ toJson(context) }}
         run: |
           echo "$GITHUB_CONTEXT"
 
-      - name: Validate that user is in `bill-test-org` GH Org
-        uses: octokit/request-action@v2.1.0
-        id: validate_gh_org_membership
+      - name: Get linked GH issue
+        uses: actions/github-script@4.1.0
         with:
-          route: GET /orgs/{org}/members/{username}
-          username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+          github-token: ${{secrets.GIT_API_TOKEN}}
+          script: |
+            let body = context.payload.pull_request.body;
 
-      - run: |
-          echo "$RESP"
-        env:
-          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
+            const re1 = /department-of-veterans-affairs\/va\.gov-team\/issues\/(\d+)[\s]/g;
+            const matches = body.match(re1);
+            if(matches){
+              console.log('Matched 1!')
+              matches.forEach(match => {
+                console.log(match)
+              //  var issueId = match.trim();
+              //  let issue = github.issues.get({
+              //    owner: 'department-of-veterans-affairs',
+              //    repo: 'va.gov-team',
+              //    issue_number: issueId,
+              //   });
+              });
+            }
+
+            const re2 = /department-of-veterans-affairs\/va\.gov-team\/issues\/(\d+)[\s]/g;
+            const matches = body.match(re2);
+            if(matches){
+              console.log('Matched 2!')
+              matches.forEach(match => {
+                console.log(match)
+              //  var issueId = match.trim();
+              //  let issue = github.issues.get({
+              //    owner: 'department-of-veterans-affairs',
+              //    repo: 'va.gov-team',
+              //    issue_number: issueId,
+              //   });
+              });
+            }
+
+
+      # - name: Validate that user is in `bill-test-org` GH Org
+      #   uses: octokit/request-action@v2.1.0
+      #   id: validate_gh_org_membership
+      #   with:
+      #     route: GET /orgs/{org}/members/{username}
+      #     username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
+      #     org: bill-test-org
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+
+      # - run: |
+      #     echo "$RESP"
+      #   env:
+      #     RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
 
       # - name: Create PR in `devops` repo
