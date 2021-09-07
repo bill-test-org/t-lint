@@ -21,8 +21,8 @@ jobs:
         id: validate_gh_org_membership
         with:
           route: GET /orgs/{org}/members/{username}
-          username: blahblah # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
+          username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
+          org: google
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
 
