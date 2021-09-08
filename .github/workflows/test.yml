@@ -64,19 +64,19 @@ jobs:
       - name: Print the GET GH Issue Response
         run: echo "user is... ${{ fromJson(steps.get_gh_issue.outputs.data).user.login }}"
 
-      # - name: Validate that user is in `bill-test-org` GH Org
-      #   uses: octokit/request-action@v2.1.0
-      #   id: validate_gh_org_membership
-      #   with:
-      #     route: GET /orgs/{org}/members/{username}
-      #     username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-      #     org: bill-test-org
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+      - name: Validate that user is in `bill-test-org` GH Org
+        uses: octokit/request-action@v2.1.0
+        id: validate_gh_org_membership
+        with:
+          route: GET /orgs/{org}/members/{username}
+          username: ${{ fromJson(steps.get_gh_issue.outputs.data).user.login }} # TODO - github.event.sender.login? github.event.issue.owner? github.event.issue.user? get from template instead?
+          org: bill-test-org
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
 
-      # - run: |
-      #     echo "$RESP"
-      #   env:
-      #     RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
+      - run: |
+          echo "$RESP"
+        env:
+          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
 
       # - name: Create PR in `devops` repo
