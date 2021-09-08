@@ -27,6 +27,11 @@ jobs:
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
             let body = context.payload.pull_request.body;
+
+            console.log(context.payload.pull_request)
+
+            throw "Stop!"
+            
             const repo_owner = "omgitsbillryan", repo = "t-lint";
 
             // GH issue links can take multiple forms
