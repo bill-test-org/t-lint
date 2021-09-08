@@ -19,44 +19,30 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
 
-      - name: Get linked GH issue
+      - name: Get linked GH Issue Number
         uses: actions/github-script@0.9.0
         with:
+          result-encoding: string
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
             let body = context.payload.pull_request.body;
+            const patterns = [
+              "omgitsbillryan\/t-lint\/issues\/(\\d+)",
+              "omgitsbillryan\/t-lint#(\\d+)"
+            ];
+            const re = new RegExp(patterns.join("|"));
 
-            const re1 = /omgitsbillryan\/t-lint\/issues\/(\d+)/;
-            const matches1 = body.match(re1);
-            if(matches1){
-              console.log('Matched 1!');
-              console.log(`Bill ${matches1[1]}`)
-              matches1.forEach(match => {
-                console.log(match)
-                console.log(match[0])
-              //  var issueId = match.trim();
-              //  let issue = github.issues.get({
-              //    owner: 'department-of-veterans-affairs',
-              //    repo: 'va.gov-team',
-              //    issue_number: issueId,
-              //   });
-              });
+            const match = body.match(re);
+
+            if(match) {
+              match.shift();
+              return match.find(el => el !== undefined);
+            } else {
+              return "-1";
             }
 
-            const re2 = /omgitsbillryan\/t-lint#(\d+)[\s]/g;
-            const matches2 = body.match(re2);
-            if(matches2){
-              console.log('Matched 2!')
-              matches2.forEach(match => {
-                console.log(match)
-              //  var issueId = match.trim();
-              //  let issue = github.issues.get({
-              //    owner: 'department-of-veterans-affairs',
-              //    repo: 'va.gov-team',
-              //    issue_number: issueId,
-              //   });
-              });
-            }
+      - name: Print Result
+        run: echo "${{steps.set-result.outputs.result}}"
 
 
       # - name: Validate that user is in `bill-test-org` GH Org
