@@ -37,19 +37,14 @@ jobs:
 
             var match = body.match(re);
 
-            if(!match) return "";
+            if(!match) return ""; // no matches
 
-            console.log(match);
             match.shift(); // remove match text
             match = match.filter(e => e); // remove 'undefined' values
-            console.log(match);
 
-            if(match.length != 1) return "-1";
+            if(match.length != 1) return "-1"; // multiple regex matches
 
             return match.toString();
-
-
-            return rtn;
 
       - name: Print Result
         run: echo "${{steps.get_gh_number.outputs.result}}"
