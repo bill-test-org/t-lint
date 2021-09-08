@@ -19,6 +19,9 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
 
+      - name: Print PR body
+        run: echo "${{context.payload.pull_request.body}}"
+
       - name: Get linked GH Issue Number
         uses: actions/github-script@0.9.0
         with:
