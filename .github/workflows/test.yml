@@ -37,7 +37,7 @@ jobs:
 
             var match = body.match(re);
 
-            if(!match) return ""; // no matches
+            if(!match) throw "No Github Issue Link Found in PR Body!";
 
             match.shift(); // remove match text
             match = match.filter(e => e); // remove 'undefined' values
