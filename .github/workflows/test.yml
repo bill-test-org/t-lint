@@ -27,11 +27,11 @@ jobs:
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
             let body = context.payload.pull_request.body;
-            console.log(context.payload.pull_request.body)
+            const repo_owner = "omgitsbillryan", repo = "t-lint";
 
             const patterns = [
-              "omgitsbillryan\/t-lint\/issues\/(\\d+)",
-              "omgitsbillryan\/t-lint#(\\d+)"
+              repo_owner + "\/" + repo + "\/issues\/(\\d+)",
+              repo_owner + "\/" + repo + "#(\\d+)"
             ];
             const re = new RegExp(patterns.join("|"));
 
@@ -42,7 +42,7 @@ jobs:
             match.shift(); // remove match text
             match = match.filter(e => e); // remove 'undefined' values
 
-            if(match.length != 1) return "-1"; // multiple regex matches
+            if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
 
             return match.toString();
 
