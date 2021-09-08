@@ -35,13 +35,13 @@ jobs:
             ];
             const re = new RegExp(patterns.join("|"));
 
-            const match = body.match(re);
+            var match = body.match(re);
 
             var rtn = "-99";
             if(match) {
               console.log(match);
               match.shift(); // remove match text
-              match.filter(e => e); // remove 'undefined' values
+              match = match.filter(e => e); // remove 'undefined' values
               console.log(match);
               if(match.length != 1) {
                 rtn = "-2"; // means multiple regex matches
