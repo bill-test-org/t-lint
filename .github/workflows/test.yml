@@ -37,12 +37,21 @@ jobs:
 
             const match = body.match(re);
 
+            var rtn = "-99";
             if(match) {
-              match.shift();
-              return match.find(el => el !== undefined);
+              match.shift(); // remove match text
+              match.filter(e => e) // remove 'undefined' values
+              
+              if(match.length != 1) {
+                rtn = "-2"; // means multiple regex matches
+              } else {
+                rtn = match.toString();
+              }
             } else {
-              return "-1";
+              rtn = "-1";
             }
+
+            return rtn;
 
       - name: Print Result
         run: echo "${{steps.get_gh_number.outputs.result}}"
