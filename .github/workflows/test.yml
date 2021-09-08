@@ -21,6 +21,7 @@ jobs:
 
       - name: Get linked GH Issue Number
         uses: actions/github-script@0.9.0
+        id: get_gh_number
         with:
           result-encoding: string
           github-token: ${{secrets.GIT_API_TOKEN}}
@@ -44,7 +45,7 @@ jobs:
             }
 
       - name: Print Result
-        run: echo "${{steps.set-result.outputs.result}}"
+        run: echo "${{steps.get_gh_number.outputs.result}}"
 
 
       # - name: Validate that user is in `bill-test-org` GH Org
