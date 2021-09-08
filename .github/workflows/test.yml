@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
 
-      - name: Get linked GH Issue Number
+      - name: Get linked GH Issue Number from PR Body
         uses: actions/github-script@0.9.0
         id: get_gh_number
         with:
@@ -29,6 +29,7 @@ jobs:
             let body = context.payload.pull_request.body;
             const repo_owner = "omgitsbillryan", repo = "t-lint";
 
+            // GH issue links can take multiple forms
             const patterns = [
               repo_owner + "\/" + repo + "\/issues\/(\\d+)",
               repo_owner + "\/" + repo + "#(\\d+)"
@@ -46,10 +47,22 @@ jobs:
 
             return match.toString();
 
-      - name: Print Result
+      - name: Print GH Issue Number
         run: echo "${{steps.get_gh_number.outputs.result}}"
 
+      - name: Get the GH Issue
+        uses: octokit/request-action@v2.1.0
+        id: get_gh_issue
+        with:
+          route: GET /repos/{owner}/{repo}/issues/{issue_number}
+          owner: omgitsbillryan
+          repo: t-lint
+          issue_number: ${{steps.get_gh_number.outputs.result}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
 
+      - name: Print the GET GH Issue Response
+        run: "echo latest release: ${{ steps.get_gh_issue.outputs.data }}"
       # - name: Validate that user is in `bill-test-org` GH Org
       #   uses: octokit/request-action@v2.1.0
       #   id: validate_gh_org_membership
