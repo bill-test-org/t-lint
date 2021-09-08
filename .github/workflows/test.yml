@@ -4,10 +4,12 @@ on:
   pull_request:
     branches:
       - master
+  # issues:
+  #   types: [opened]
 
 jobs:
   open_socks_pr:
-    #if: contains(github.event.issue.labels.*.name, 'bill-test-label')
+    # if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
     runs-on: ubuntu-latest
     steps:
@@ -17,19 +19,15 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
 
-      - name: Validate that user is in `bill-test-org` GH Org
-        uses: octokit/request-action@v2.1.0
-        id: validate_gh_org_membership
+      - name: Get linked GH Issue Number from PR Body
+        uses: actions/github-script@0.9.0
+        id: get_gh_number
         with:
-          route: GET /orgs/{org}/members/{username}
-          username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+          result-encoding: string
+          github-token: ${{secrets.GIT_API_TOKEN}}
+          script: |
+            let body = context.payload.pull_request.body;
 
-      - run: |
-          echo "$RESP"
-        env:
-          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
+            console.log(context.payload.pull_request)
 
-      # - name: Create PR in `devops` repo
+            throw "Stop!"
