@@ -37,20 +37,17 @@ jobs:
 
             var match = body.match(re);
 
-            var rtn = "-99";
-            if(match) {
-              console.log(match);
-              match.shift(); // remove match text
-              match = match.filter(e => e); // remove 'undefined' values
-              console.log(match);
-              if(match.length != 1) {
-                rtn = "-2"; // means multiple regex matches
-              } else {
-                rtn = match.toString();
-              }
-            } else {
-              rtn = "-1";
-            }
+            if(!match) return "";
+
+            console.log(match);
+            match.shift(); // remove match text
+            match = match.filter(e => e); // remove 'undefined' values
+            console.log(match);
+
+            if(match.length != 1) return "-1";
+
+            return match.toString();
+
 
             return rtn;
 
