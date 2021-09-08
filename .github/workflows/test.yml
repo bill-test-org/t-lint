@@ -1,8 +1,9 @@
 name: Open SOCKS PR for Requesting department-of-veterans-affairs members
 
 on:
-  issues:
-    types: [opened]
+  pull_request:
+    branches:
+      - master
 
 jobs:
   open_socks_pr:
