@@ -39,9 +39,10 @@ jobs:
 
             var rtn = "-99";
             if(match) {
+              console.log(match);
               match.shift(); // remove match text
-              match.filter(e => e) // remove 'undefined' values
-              
+              match.filter(e => e); // remove 'undefined' values
+              console.log(match);
               if(match.length != 1) {
                 rtn = "-2"; // means multiple regex matches
               } else {
