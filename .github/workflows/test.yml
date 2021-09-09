@@ -1,34 +1,56 @@
-name: Open SOCKS PR for Requesting department-of-veterans-affairs members
+name: Verify Access Request Issue Owner is a Member of the Org
 
 on:
-  issues:
-    types: [opened]
+  pull_request:
+    branches:
+      - master
+  # issues:
+  #   types: [opened]
 
 jobs:
-  open_socks_pr:
-    if: contains(github.event.issue.labels.*.name, 'bill-test-label')
+  verify_socks_authorization:
+    # if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
     runs-on: ubuntu-latest
+    env:
+      owner: omgitsbillryan
+      repo: t-lint
+
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
-
-      - name: Validate that user is in `bill-test-org` GH Org
-        uses: octokit/request-action@v2.1.0
-        id: validate_gh_org_membership
+      - name: Get Issue Number from PR Body, Issue Owner, & Verify Org Membership
+        uses: actions/github-script@v4
         with:
-          route: GET /orgs/{org}/members/{username}
-          username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+          github-token: ${{secrets.GIT_API_TOKEN}}
+          script: |
+            // -- 1. Get issue number from PR Body --//
+            const body = context.payload.pull_request.body;
+            const { owner, repo } = process.env
 
-      - run: |
-          echo "$RESP"
-        env:
-          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
+            // GH issue links can take multiple forms
+            const patterns = [
+              owner + "\/" + repo + "\/issues\/(\\d+)",
+              owner + "\/" + repo + "#(\\d+)"
+            ];
+            const re = new RegExp(patterns.join("|"));
 
-      # - name: Create PR in `devops` repo
+            var match = body.match(re);
+
+            if(!match) throw "No Github Issue Link Found in PR Body!";
+
+            match.shift(); // remove match text
+            match = match.filter(e => e); // remove 'undefined' values
+
+            if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
+
+
+            // -- 2. Get GH Issue -------------------//
+            const issue_number = match.toString()
+            const issue_resp = await github.issues.get({owner, repo, issue_number})
+
+
+            // -- 3. Verify GH Org Membership -------//
+            const username = issue_resp.data.user.login
+            const org = 'bill-test-org' //owner
+            const org_resp = await github.orgs.checkMembershipForUser({org, username})
+
+            if(org_resp.status !== 204) throw "Unable to verify user membership to org!"
