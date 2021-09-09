@@ -32,7 +32,7 @@ jobs:
             let body = context.payload.pull_request.body;
             const { REPO_OWNER, REPO } = process.env
 
-            console.log(`Repo owner = $REPO_OWNER`)
+            console.log(`Repo owner = ${REPO_OWNER}`)
 
             // GH issue links can take multiple forms
             const patterns = [
@@ -49,6 +49,11 @@ jobs:
             match = match.filter(e => e); // remove 'undefined' values
 
             if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
+
+            var issue_number = match.toString()
+
+            const issue_resp = await github.issues.get({REPO_OWNER, REPO, issue_number})
+            console.log(issue_resp)
 
             return match.toString();
 
