@@ -57,7 +57,7 @@ jobs:
             console.log(`username = ${username}`)
             
             const org_resp = await github.orgs.checkMembershipForUser({
-                              org: repo,
+                              org: 'bill-test-org', //repo
                               username: username
                             });
             console.log(org_resp)
