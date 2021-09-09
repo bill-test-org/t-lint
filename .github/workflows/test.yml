@@ -1,4 +1,4 @@
-name: Open SOCKS PR for Requesting department-of-veterans-affairs members
+name: Verify Access Request Issue Owner is a Member of the Org
 
 on:
   pull_request:
@@ -8,28 +8,21 @@ on:
   #   types: [opened]
 
 jobs:
-  open_socks_pr:
+  verify_socks_authorization:
     # if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
     runs-on: ubuntu-latest
     env:
       owner: omgitsbillryan
       repo: t-lint
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
 
+    steps:
       - name: Get linked GH Issue Number from PR Body
         uses: actions/github-script@v4
-        id: get_gh_number
         with:
-          result-encoding: string
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
-            let body = context.payload.pull_request.body;
+            const body = context.payload.pull_request.body;
             const { owner, repo } = process.env
 
             console.log(`Repo owner = ${owner}`)
@@ -50,50 +43,15 @@ jobs:
 
             if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
 
+
+            // get GH issue
             const issue_number = match.toString()
             const issue_resp = await github.issues.get({owner, repo, issue_number})
 
+
+            // verify membership
             const username = issue_resp.data.user.login
-            console.log(`username = ${username}`)
-            
-            const org_resp = await github.orgs.checkMembershipForUser({
-                              org: 'bill-test-org', //repo
-                              username: username
-                            });
-            console.log(org_resp)
+            const org = 'bill-test-org' //repo
+            const org_resp = await github.orgs.checkMembershipForUser({org, username})
 
-            return match.toString();
-
-      - name: Print GH Issue Number
-        run: echo "${{steps.get_gh_number.outputs.result}}"
-
-      - name: Get the GH Issue
-        uses: octokit/request-action@v2.1.0
-        id: get_gh_issue
-        with:
-          route: GET /repos/{owner}/{repo}/issues/{issue_number}
-          owner: omgitsbillryan
-          repo: t-lint
-          issue_number: ${{steps.get_gh_number.outputs.result}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
-
-      - name: Print the GET GH Issue Response
-        run: echo "user is... ${{ fromJson(steps.get_gh_issue.outputs.data).user.login }}"
-
-      - name: Validate that user is in `bill-test-org` GH Org
-        uses: octokit/request-action@v2.1.0
-        id: validate_gh_org_membership
-        with:
-          route: GET /orgs/{org}/members/{username}
-          username: ${{ fromJson(steps.get_gh_issue.outputs.data).user.login }} # TODO - github.event.sender.login? github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
-
-      - run: |
-          echo "$RESP"
-        env:
-          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
-
-      # - name: Create PR in `devops` repo
+            if(org_resp.status !== 204) throw "Unable to verify user membership to org!"
