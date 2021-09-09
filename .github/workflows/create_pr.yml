@@ -1,0 +1,27 @@
+name: Automatically Create PR
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_socks_pull_request:
+    if: contains(github.event.issue.labels.*.name, 'ops-access-request')
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          repository: omgitsbillryan/t-lint
+          token: ${{ secrets.GIT_API_TOKEN }}
+
+      - name: Read Email Address & SSH Key from Access Request GH Issue
+        run: |
+          echo "${{github.event.issue}}"
+          echo "email=${{ parsed_email }}" >> $GITHUB_ENV
+          echo "ssh_key=${{ parsed_ssh_key }}" >> $GITHUB_ENV
+
+      # - name: Set foobar to cool
+      #   uses: mikefarah/yq@master
+      #   with:
+      #     cmd: yq e '.key_groups.developers += ["${{env.email}}"]' --inplace config.yml
