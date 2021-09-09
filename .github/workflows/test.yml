@@ -13,8 +13,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      REPO_OWNER: omgitsbillryan
-      REPO: t-lint
+      repo_owner: omgitsbillryan
+      repo: t-lint
     steps:
       - name: Dump GitHub context
         env:
@@ -30,14 +30,14 @@ jobs:
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
             let body = context.payload.pull_request.body;
-            const { REPO_OWNER, REPO } = process.env
+            const { repo_owner, repo } = process.env
 
-            console.log(`Repo owner = ${REPO_OWNER}`)
+            console.log(`Repo owner = ${repo_owner}`)
 
             // GH issue links can take multiple forms
             const patterns = [
-              REPO_OWNER + "\/" + REPO + "\/issues\/(\\d+)",
-              REPO_OWNER + "\/" + REPO + "#(\\d+)"
+              repo_owner + "\/" + repo + "\/issues\/(\\d+)",
+              repo_owner + "\/" + repo + "#(\\d+)"
             ];
             const re = new RegExp(patterns.join("|"));
 
@@ -52,7 +52,7 @@ jobs:
 
             var issue_number = match.toString()
 
-            const issue_resp = await github.issues.get({REPO_OWNER, REPO, issue_number})
+            const issue_resp = await github.issues.get({repo_owner, repo, issue_number})
             console.log(issue_resp)
 
             return match.toString();
