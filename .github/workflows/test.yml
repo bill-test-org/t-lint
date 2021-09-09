@@ -50,10 +50,11 @@ jobs:
 
             if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
 
-            var issue_number = match.toString()
+            var issue_number = "99" // match.toString()
 
             const issue_resp = await github.issues.get({owner, repo, issue_number})
             console.log(issue_resp)
+            if(issue_resp.status !== 200) throw `Issue #${issue_number} not found!`
 
             return match.toString();
 
