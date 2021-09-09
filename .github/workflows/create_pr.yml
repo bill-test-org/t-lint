@@ -1,7 +1,7 @@
 name: Automatically Create PR
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 jobs:
   create_socks_pull_request:
