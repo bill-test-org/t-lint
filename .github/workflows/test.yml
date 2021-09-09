@@ -23,7 +23,7 @@ jobs:
           echo "$GITHUB_CONTEXT"
 
       - name: Get linked GH Issue Number from PR Body
-        uses: actions/github-script@0.9.0
+        uses: actions/github-script@v4
         id: get_gh_number
         with:
           result-encoding: string
