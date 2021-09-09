@@ -1,34 +1,34 @@
-name: Open SOCKS PR for Requesting department-of-veterans-affairs members
+# name: Open SOCKS PR for Requesting department-of-veterans-affairs members
 
-on:
-  issues:
-    types: [opened]
+# on:
+#   issues:
+#     types: [opened]
 
-jobs:
-  open_socks_pr:
-    if: contains(github.event.issue.labels.*.name, 'bill-test-label')
+# jobs:
+#   open_socks_pr:
+#     if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Dump GitHub context
+#         env:
+#           GITHUB_CONTEXT: ${{ toJson(github) }}
+#         run: |
+#           echo "$GITHUB_CONTEXT"
 
-      - name: Validate that user is in `bill-test-org` GH Org
-        uses: octokit/request-action@v2.1.0
-        id: validate_gh_org_membership
-        with:
-          route: GET /orgs/{org}/members/{username}
-          username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
-          org: bill-test-org
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
+#       - name: Validate that user is in `bill-test-org` GH Org
+#         uses: octokit/request-action@v2.1.0
+#         id: validate_gh_org_membership
+#         with:
+#           route: GET /orgs/{org}/members/{username}
+#           username: ${{ github.event.sender.login }} # TODO - github.event.issue.owner? github.event.issue.user? get from template instead?
+#           org: bill-test-org
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GIT_API_TOKEN }}
 
-      - run: |
-          echo "$RESP"
-        env:
-          RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
+#       - run: |
+#           echo "$RESP"
+#         env:
+#           RESP: ${{ toJson(steps.validate_gh_org_membership.outputs) }}
 
       # - name: Create PR in `devops` repo
