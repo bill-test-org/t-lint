@@ -17,7 +17,7 @@ jobs:
       repo: t-lint
 
     steps:
-      - name: Get linked GH Issue Number from PR Body
+      - name: Get Issue Number from PR Body, Issue Owner, & Verify Org Membership
         uses: actions/github-script@v4
         with:
           github-token: ${{secrets.GIT_API_TOKEN}}
