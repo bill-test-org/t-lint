@@ -19,11 +19,12 @@ jobs:
         run: |
           email=$(echo -e "${{ github.event.issue.body }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
           echo $email
+          echo "${{ github.event.issue.body }}" | grep -Pi -o "\`\`\`.+?(?=\`\`\`)"
           echo "email=$email" >> $GITHUB_ENV
           echo "ssh_key=fake_ssh_key" >> $GITHUB_ENV
 
-      # - name: Set foobar to cool
-      #   uses: mikefarah/yq@master
-      #   with:
-      #     cmd: yq e '.key_groups.developers += ["${{env.email}}"]' --inplace config.yml
+      - name: Set foobar to cool
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.key_groups.developers += ["${{env.email}}"]' --inplace config.yml
 
