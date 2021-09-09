@@ -22,10 +22,9 @@ jobs:
         with:
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
+            // -- 1. Get issue number from PR Body --//
             const body = context.payload.pull_request.body;
             const { owner, repo } = process.env
-
-            console.log(`Repo owner = ${owner}`)
 
             // GH issue links can take multiple forms
             const patterns = [
@@ -44,14 +43,14 @@ jobs:
             if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
 
 
-            // get GH issue
+            // -- 2. Get GH Issue -------------------//
             const issue_number = match.toString()
             const issue_resp = await github.issues.get({owner, repo, issue_number})
 
 
-            // verify membership
+            // -- 3. Verify GH Org Membership -------//
             const username = issue_resp.data.user.login
-            const org = 'bill-test-org' //repo
+            const org = 'bill-test-org' //owner
             const org_resp = await github.orgs.checkMembershipForUser({org, username})
 
             if(org_resp.status !== 204) throw "Unable to verify user membership to org!"
