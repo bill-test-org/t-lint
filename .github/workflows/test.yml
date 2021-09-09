@@ -12,6 +12,9 @@ jobs:
     # if: contains(github.event.issue.labels.*.name, 'bill-test-label')
 
     runs-on: ubuntu-latest
+    env:
+      REPO_OWNER: omgitsbillryan
+      REPO: t-lint
     steps:
       - name: Dump GitHub context
         env:
@@ -27,17 +30,14 @@ jobs:
           github-token: ${{secrets.GIT_API_TOKEN}}
           script: |
             let body = context.payload.pull_request.body;
+            const { REPO_OWNER, REPO } = process.env
 
-            console.log(context.payload.pull_request)
-
-            throw "Stop!"
-            
-            const repo_owner = "omgitsbillryan", repo = "t-lint";
+            console.log(`Repo owner = $REPO_OWNER`)
 
             // GH issue links can take multiple forms
             const patterns = [
-              repo_owner + "\/" + repo + "\/issues\/(\\d+)",
-              repo_owner + "\/" + repo + "#(\\d+)"
+              REPO_OWNER + "\/" + REPO + "\/issues\/(\\d+)",
+              REPO_OWNER + "\/" + REPO + "#(\\d+)"
             ];
             const re = new RegExp(patterns.join("|"));
 
