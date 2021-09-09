@@ -17,7 +17,7 @@ jobs:
 
       - name: Read Email Address & SSH Key from Access Request GH Issue
         run: |
-          echo "${{ toJSON(github.event.issue) }}"
+          echo "${{ github.event.issue.body }} | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1"
           echo "email=blah@aol.com" >> $GITHUB_ENV
           echo "ssh_key=fake_ssh_key" >> $GITHUB_ENV
 
@@ -25,3 +25,4 @@ jobs:
       #   uses: mikefarah/yq@master
       #   with:
       #     cmd: yq e '.key_groups.developers += ["${{env.email}}"]' --inplace config.yml
+
