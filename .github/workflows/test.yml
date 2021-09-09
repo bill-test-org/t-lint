@@ -50,6 +50,7 @@ jobs:
 
             if(match.length != 1) throw "More Than 1 Issue Link Found in PR Body!";
 
+            const issue_number = match.toString()
             const issue_resp = await github.issues.get({owner, repo, issue_number})
 
             const username = issue_resp.data.user.login
