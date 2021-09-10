@@ -27,6 +27,8 @@ jobs:
               event = json.load(fh)
           escaped = event['issue']['body'].replace("\r\n", "")
           print('Bills stuff...' + escaped.strip())
+          with open(os.environ['GITHUB_ENV'], 'a') as fh:
+            print(f'SANITIZED_PR_BODY={escaped}', file=fh)
         shell: python3 {0}
 
       - name: Print sanitized output
