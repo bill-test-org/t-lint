@@ -25,8 +25,8 @@ jobs:
           import os
           with open('${{ github.event_path }}') as fh:
               event = json.load(fh)
-          escaped = event['issue']['body']
-          print('Bills stuff...' + escaped)
+          escaped = event['issue']['body'].replace("\r\n", "")
+          print('Bills stuff...' + escaped.strip())
         shell: python3 {0}
 
       - name: Print sanitized output
