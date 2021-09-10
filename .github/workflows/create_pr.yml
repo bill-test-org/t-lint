@@ -17,11 +17,11 @@ jobs:
 
       - name: Read Email Address & SSH Key from Access Request GH Issue
         run: |
-          email=$(echo -e "${{ github.event.issue.body }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
-          echo $email
-          echo -e "${{ github.event.issue.body }}" | grep -o "\`\`\`.*\`\`\`" | sed 's/`//g' | sed 's/\\r\\n//g'
-          echo "email=$email" >> $GITHUB_ENV
-          echo "ssh_key=fake_ssh_key" >> $GITHUB_ENV
+          echo "${{ github.event.issue.body }}" >> pr_body.txt
+          echo "email is..."
+          cat pr_body.txt | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1
+          echo "ssh key is..."
+          cat pr_body.txt | grep -o "\`\`\`.*\`\`\`" | sed 's/`//g' | sed 's/\\r\\n//g'
 
       # - name: Set foobar to cool
       #   uses: mikefarah/yq@master
