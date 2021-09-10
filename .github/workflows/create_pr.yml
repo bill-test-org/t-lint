@@ -15,13 +15,13 @@ jobs:
           repository: omgitsbillryan/t-lint
           token: ${{ secrets.GIT_API_TOKEN }}
 
-      - name: Sanitize input
+      - name: Sanitize Input
         run: |
           import json
           import os
-          with open('${{github.event_path}}') as fh:
+          with open('${{ github.event_path }}') as fh:
               event = json.load(fh)
-          escaped = shlex.quote(event['issue']['body'])
+          escaped = event['issue']['body']
           with open(os.environ['GITHUB_ENV'], 'a') as fh:
               print(f'SANITIZED_PR_BODY={escaped}', file=fh)
         shell: python3 {0}
