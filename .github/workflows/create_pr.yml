@@ -26,8 +26,7 @@ jobs:
           with open('${{ github.event_path }}') as fh:
               event = json.load(fh)
           escaped = event['issue']['body']
-          with open(os.environ['GITHUB_ENV'], 'a') as fh:
-              print(f'SANITIZED_PR_BODY={escaped}', file=fh)
+          print('Bills stuff...' + escaped)
         shell: python3 {0}
 
       - name: Print sanitized output
