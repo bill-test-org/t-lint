@@ -19,7 +19,7 @@ jobs:
         run: |
           import json
           import os
-          with open("${{ github.event.issue }}") as fh:
+          with open("${{ toJSON(github.event.issue) }}") as fh:
               event = json.load(fh)
           escaped = event['body']
           with open(os.environ['GITHUB_ENV'], 'a') as fh:
