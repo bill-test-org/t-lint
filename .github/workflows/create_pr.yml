@@ -19,9 +19,9 @@ jobs:
         run: |
           import json
           import os
-          with open('${{ toJSON(github.event.issue) }}') as fh:
+          with open('${{ toJSON(github.event.issue.body) }}') as fh:
               event = json.load(fh)
-          escaped = event['body']
+          escaped = event
           with open(os.environ['GITHUB_ENV'], 'a') as fh:
               print(f'SANITIZED_PR_BODY={escaped}', file=fh)
         shell: python3 {0}
