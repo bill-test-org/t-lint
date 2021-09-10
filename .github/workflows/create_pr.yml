@@ -18,11 +18,9 @@ jobs:
       - name: Read Email Address & SSH Key from Access Request GH Issue
         run: |
           echo ${{ github.event.issue.body }} >> pr_body.txt
-          cat pr_body.txt
-          echo "email is..."
-          cat pr_body.txt | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1
-          echo "ssh key is..."
-          cat pr_body.txt | grep -o "\`\`\`.*\`\`\`" | sed 's/`//g' | sed 's/\\r\\n//g'
+          SANITIZED=${${{ github.event.issue.body }}//[^a-zA-Z0-9_]/}
+          echo $SANITIZED
+
 
       # - name: Set foobar to cool
       #   uses: mikefarah/yq@master
