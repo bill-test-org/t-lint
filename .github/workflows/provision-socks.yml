@@ -34,3 +34,6 @@ jobs:
           echo "email=${arr[0]}" >> $GITHUB_ENV
           echo "type=${arr[1]}" >> $GITHUB_ENV
           echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
+
+      - name: whatever
+        run: echo $ssh_key
