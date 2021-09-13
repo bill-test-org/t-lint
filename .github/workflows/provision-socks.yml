@@ -35,15 +35,22 @@ jobs:
       #     echo "type=${arr[1]}" >> $GITHUB_ENV
       #     echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
 
-      - uses: jungwinter/split@v1
+      - name: Use jungwinter/split marketplace action to split command into vars
+        uses: jungwinter/split@v1
         id: split
         with:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
-      - name: whatever
-        run: echo "hi"
+      - name: Parse out vars from previous step into readable environment variables
+        run: |
+          echo "email=$email" >> $GITHUB_ENV
+          echo "type=$type" >> $GITHUB_ENV
+          echo "ssh_key=$ssh_key" >> $GITHUB_ENV
         env:
           email: ${{ steps.split.outputs._0 }}
           type: ${{ steps.split.outputs._1 }}
           ssh_key: ${{ steps.split.outputs._2 }}
+
+      - name: Print var
+        run: echo "Here is the ssh key $ssh_key"
