@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Check for command
         uses: xt0rted/slash-command-action@v1
+        id: command
         with:
           repo-token: ${{ secrets.GIT_API_TOKEN }}
           command: provision_socks
