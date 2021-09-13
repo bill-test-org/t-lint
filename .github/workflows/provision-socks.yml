@@ -30,7 +30,7 @@ jobs:
       - name: Parse out params
         env: 
           args: ${{ toJSON(join(steps.command.outputs.command-arguments, ', ')) }}
-        run: echo "end parse params ${env.args[1]}"
+        run: echo "end parse params ${args[1]}"
 
       - name: See env vars
         run: echo "Hi"
