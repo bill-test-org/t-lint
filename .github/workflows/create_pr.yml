@@ -19,14 +19,20 @@ jobs:
         run: |
           echo ${{ github.event_path }}
 
+      # email=$(echo -e "${{ github.event.issue.body }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
       - name: Sanitize Input
         run: |
           import json
           import os
+          import re
           with open('${{ github.event_path }}') as fh:
               event = json.load(fh)
-          escaped = event['issue']['body'].replace("\r\n", "")
-          print('Bills stuff...' + escaped.strip())
+          pr_body = event['issue']['body'].replace("\r\n", "").strip()
+          ssh_key = re.findall("(?<=```).*(?=```)", pr_body)[0]
+
+
+
+
           with open(os.environ['GITHUB_ENV'], 'a') as fh:
             print(f'SANITIZED_PR_BODY={escaped}', file=fh)
         shell: python3 {0}
@@ -34,6 +40,9 @@ jobs:
       - name: Print sanitized output
         run: |
           echo "$SANITIZED_PR_BODY"
+
+      - name: Print stuff
+        run: echo ${{ github.event.issue.body }}
 
       # - name: Read Email Address & SSH Key from Access Request GH Issue
       #   run: |
