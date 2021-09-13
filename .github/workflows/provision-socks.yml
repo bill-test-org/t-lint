@@ -20,12 +20,17 @@ jobs:
       - name: Act on the command
         run: echo "The command was '${{ steps.command.outputs.command-name }}' with arguments '${{ steps.command.outputs.command-arguments }}'"
 
-      - name: Parse out email and ssh key from command
-        run: |
-          email=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
-          ssh_key=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "ssh-.+")
-          echo "email=$email" >> $GITHUB_ENV
-          echo "ssh_key=$ssh_key" >> $GITHUB_ENV
+      # - name: Parse out email and ssh key from command
+      #   run: |
+      #     email=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
+      #     ssh_key=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "ssh-.+")
+      #     echo "email=$email" >> $GITHUB_ENV
+      #     echo "ssh_key=$ssh_key" >> $GITHUB_ENV
+
+      - name: Parse out params
+        env: 
+          args: ${{ join(steps.command.outputs.command-arguments, ', ') }}
+        run: echo "end parse params"
 
       - name: See env vars
         run: echo "Hi"
