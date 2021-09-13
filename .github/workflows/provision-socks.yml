@@ -10,7 +10,7 @@ jobs:
       - name: Check for command
         uses: xt0rted/slash-command-action@v1
         with:
-          repo-token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GIT_API_TOKEN }}
           command: provision_socks
           reaction: "true"
           reaction-type: "eyes"
