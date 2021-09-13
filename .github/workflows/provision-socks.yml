@@ -29,7 +29,7 @@ jobs:
 
       - name: Parse out params
         env: 
-          email: "[${{ steps.command.outputs.command-arguments}}]"
+          email: "[${{ join(steps.command.outputs.command-arguments) }}]"
           bill: ${{ toJson(steps.command.outputs) }}
         run: |
           echo $email
