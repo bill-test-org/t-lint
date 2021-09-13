@@ -27,14 +27,8 @@ jobs:
       #     echo "email=$email" >> $GITHUB_ENV
       #     echo "ssh_key=$ssh_key" >> $GITHUB_ENV
 
-      - name: Parse out params
-        env: 
-          email: "[${{ steps.command.outputs.command-arguments }}]"
-          bill: ${{ toJson(steps.command.outputs) }}
+      - name: Use base to Parse
         run: |
-          echo ${{ toJSON(env.email) }}
-          echo ${{ toJSON(env.email)[0] }}
-          echo $bill
-
-      - name: See env vars
-        run: echo "Hi"
+          IN="${{ steps.command.outputs.command-arguments }}"
+          arrIN=(${IN//,/ })
+          echo ${arrIN[1]}
