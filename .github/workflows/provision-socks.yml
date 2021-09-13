@@ -27,13 +27,30 @@ jobs:
       #     echo "email=$email" >> $GITHUB_ENV
       #     echo "ssh_key=$ssh_key" >> $GITHUB_ENV
 
-      - name: Parse out the params from csv in GH comment
-        run: |
-          IN="${{ steps.command.outputs.command-arguments }}"
-          arr=(${IN//,/ })
-          echo "email=${arr[0]}" >> $GITHUB_ENV
-          echo "type=${arr[1]}" >> $GITHUB_ENV
-          echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
+      # - name: Parse out the params from csv in GH comment
+      #   run: |
+      #     IN="${{ steps.command.outputs.command-arguments }}"
+      #     arr=(${IN//,/ })
+      #     echo "email=${arr[0]}" >> $GITHUB_ENV
+      #     echo "type=${arr[1]}" >> $GITHUB_ENV
+      #     echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
+
+      - uses: jungwinter/split@v1
+        id: split
+        with:
+          separator: ", "
+          msg: "${{ steps.command.outputs.command-arguments }}"
+
+      - name: release package
+        if: steps.split.outputs._0 == '/release'
+        uses: actions/create-release@latest
+        with:
+          release_name: Release ${{ steps.split.outputs._1 }}
+          tag_name: ${{ steps.split.outputs._2 }}
 
       - name: whatever
-        run: echo $ssh_key
+        run: echo "hi"
+        env:
+          email: ${{ steps.split.outputs._0 }}
+          type: ${{ steps.split.outputs._1 }}
+          ssh_key: ${{ steps.split.outputs._2 }}
