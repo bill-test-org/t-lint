@@ -22,7 +22,7 @@ jobs:
 
       - name: Parse out email and ssh key from command
         run: |
-          email=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "^.*?\ " | head -1)
+          email=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
           ssh_key=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "ssh-.+")
           echo "email=$email" >> $GITHUB_ENV
           echo "ssh_key=$ssh_key" >> $GITHUB_ENV
