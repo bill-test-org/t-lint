@@ -30,7 +30,7 @@ jobs:
       - name: Parse out the params from csv in GH comment
         run: |
           IN="${{ steps.command.outputs.command-arguments }}"
-          arr=(${IN//, / })
+          arr=(${IN//,/ })
           echo "email=${arr[0]}" >> $GITHUB_ENV
           echo "type=${arr[1]}" >> $GITHUB_ENV
           echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
