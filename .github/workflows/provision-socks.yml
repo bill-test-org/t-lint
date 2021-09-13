@@ -1,0 +1,20 @@
+name: Request Slack Removal for Offboarding Users
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check_comments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for command
+        uses: xt0rted/slash-command-action@v1
+        with:
+          repo-token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          command: provision_socks
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+
+      - name: Act on the command
+        run: echo "The command was '${{ steps.command.outputs.command-name }}' with arguments '${{ steps.command.outputs.command-arguments }}'"
