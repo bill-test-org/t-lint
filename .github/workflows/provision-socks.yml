@@ -29,10 +29,13 @@ jobs:
 
       - name: Parse out params
         env: 
-          email: ${{ toJSON(steps.command.outputs.command-arguments)[0] }}
-          type: ${{ toJSON(steps.command.outputs.command-arguments)[1] }}
-          ssh_key: ${{ toJSON(steps.command.outputs.command-arguments)[2] }}
-        run: echo $email
+          email: ${{ fromJSON(toJSON(steps.command.outputs.command-arguments))[0] }}
+          type: ${{ toJSON(steps.command.outputs.command-arguments) }}
+          ssh_key: ${{ toJSON(steps.command.outputs.command-arguments) }}
+          bill: ${{ toJson(steps.command.outputs) }}
+        run: |
+          echo $email
+          echo $bill
 
       - name: See env vars
         run: echo "Hi"
