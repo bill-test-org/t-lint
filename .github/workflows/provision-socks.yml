@@ -32,7 +32,8 @@ jobs:
           email: "[${{ steps.command.outputs.command-arguments }}]"
           bill: ${{ toJson(steps.command.outputs) }}
         run: |
-          echo "${{ toJSON(env.email) }}"
+          echo ${{ toJSON(env.email) }}
+          echo ${{ toJSON(env.email)[0] }}
           echo $bill
 
       - name: See env vars
