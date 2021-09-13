@@ -29,8 +29,10 @@ jobs:
 
       - name: Parse out params
         env: 
-          args: ${{ toJSON(join(steps.command.outputs.command-arguments, ', ')) }}
-        run: echo "end parse params ${args[1]}"
+          email: ${{ toJSON(steps.command.outputs.command-arguments)[0] }}
+          type: ${{ toJSON(steps.command.outputs.command-arguments)[1] }}
+          ssh_key: ${{ toJSON(steps.command.outputs.command-arguments)[2] }}
+        run: echo $email
 
       - name: See env vars
         run: echo "Hi"
