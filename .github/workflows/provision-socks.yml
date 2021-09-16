@@ -24,6 +24,9 @@ jobs:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
+      - name: Debug print
+        run: echo $GITHUB_REPOSITORY
+
       - name: Get Token from Github App
         id: get_token
         uses: machine-learning-apps/actions-app-token@master
