@@ -7,78 +7,73 @@ jobs:
   check_comments:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: Check for command
+        uses: xt0rted/slash-command-action@v1
+        id: command
+        with:
+          repo-token: ${{ secrets.GIT_API_TOKEN }}
+          command: provision_socks
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+
+      - name: Split GH Comment CSV into Seperate Variables
+        uses: jungwinter/split@v1
+        id: split
+        with:
+          seperator: ", "
+          msg: "${{ steps.command.outputs.command-arguments }}"
+
+      - name: Debug print
+        run: echo $GITHUB_REPOSITORY
+
+      - name: Get Token from Github App
+        id: get_token
+        uses: machine-learning-apps/actions-app-token@master
+        with:
+          APP_PEM: ${{ secrets.GH_APP_PEM }}
+          APP_ID: ${{ secrets.GH_APP_ID }}
+
+      - name: Get App Installation Token
         run: |
-          echo "$GITHUB_CONTEXT"
+          echo "This token is masked: ${TOKEN}"
+        env: 
+          TOKEN: ${{ steps.get_token.outputs.app_token }}
 
-      # - name: Check for command
-      #   uses: xt0rted/slash-command-action@v1
-      #   id: command
-      #   with:
-      #     repo-token: ${{ secrets.GIT_API_TOKEN }}
-      #     command: provision_socks
-      #     reaction: "true"
-      #     reaction-type: "eyes"
-      #     allow-edits: "false"
+      - name: Checkout Other Repo
+        uses: actions/checkout@v2
+        with:
+          repository: bill-test-org/sleepydiary
+          token: ${{ steps.get_token.outputs.app_token }}
 
-      # - name: Split GH Comment CSV into Seperate Variables
-      #   uses: jungwinter/split@v1
-      #   id: split
-      #   with:
-      #     seperator: ", "
-      #     msg: "${{ steps.command.outputs.command-arguments }}"
+      - name: Update config.yml
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.key_groups.${{ env.type }} += ["${{ env.email }}"]' --inplace ansible/global/config.yml
+        env:
+          email: "${{ steps.split.outputs._0 }}"
+          type: "${{ steps.split.outputs._1 }}"
 
-      # - name: Debug print
-      #   run: echo $GITHUB_REPOSITORY
+      - name: Create /authorized_keys SSH Key File
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ steps.split.outputs._0 }}"
+          FILE_DATA: "${{ steps.split.outputs._2 }}" # ssh key contents
 
-      # - name: Get Token from Github App
-      #   id: get_token
-      #   uses: machine-learning-apps/actions-app-token@master
-      #   with:
-      #     APP_PEM: ${{ secrets.GH_APP_PEM }}
-      #     APP_ID: ${{ secrets.GH_APP_ID }}
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ steps.get_token.outputs.app_token }}
+          commit-message: New SOCKS ssh key
+          branch: "socks-${{ steps.split.outputs._0 }}"
+          title: "[Automated SOCKS Access] ${{ steps.split.outputs._0 }}"
+          body: |
+            An automated SOCKS Access Request
 
-      # - name: Get App Installation Token
-      #   run: |
-      #     echo "This token is masked: ${TOKEN}"
-      #   env: 
-      #     TOKEN: ${{ steps.get_token.outputs.app_token }}
+            - ${{ github.event.issue.html_url }}
 
-      # - name: Checkout Other Repo
-      #   uses: actions/checkout@v2
-      #   with:
-      #     repository: bill-test-org/sleepydiary
-      #     token: ${{ steps.get_token.outputs.app_token }}
-
-      # - name: Update config.yml w/
-      #   uses: mikefarah/yq@master
-      #   with:
-      #     cmd: yq e '.key_groups.${{ env.type }} += ["${{ env.email }}"]' --inplace ansible/global/config.yml
-      #   env:
-      #     email: "${{ steps.split.outputs._0 }}"
-      #     type: "${{ steps.split.outputs._1 }}"
-
-      # - name: Create /authorized_keys SSH Key File
-      #   uses: "finnp/create-file-action@master"
-      #   env:
-      #     FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ steps.split.outputs._0 }}"
-      #     FILE_DATA: "${{ steps.split.outputs._2 }}" # ssh key contents
-
-      # - name: Create Pull Request
-      #   id: cpr
-      #   uses: peter-evans/create-pull-request@v3
-      #   with:
-      #     token: ${{ steps.get_token.outputs.app_token }}
-      #     commit-message: New SOCKS ssh key
-      #     branch: "socks-${{ steps.split.outputs._0 }}"
-      #     title: "[Automated SOCKS Access] ${{ steps.split.outputs._0 }}"
-      #     body: |
-      #       An automated SOCKS Access Request
-
-      #       The comment that triggered this PR:
-      #       - 
+            Triggered by: @${{ github.event.comment.user.login }} in [this comment](${{ github.event.comment.html_url }})
           # labels: | TODO
           #   report
           #   automated pr
