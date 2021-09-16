@@ -24,17 +24,29 @@ jobs:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
-      - name: Update config.yml w/
-        uses: mikefarah/yq@master
+      - name: Get Token from Github App
+        id: get_token
+        uses: machine-learning-apps/actions-app-token@master
         with:
-          cmd: yq e '.key_groups.$type += [$email]' --inplace config.yml
-        env:
-          email: "${{ steps.split.outputs._0 }}"
-          type: "${{ steps.split.outputs._1 }}"
+          APP_PEM: ${{ secrets.GH_APP_PEM }}
+          APP_ID: ${{ secrets.GH_APP_ID }}
 
-      # use action rather than inline script to minimize risk of injection attack
-      - name: Create /authorized_keys SSH Key File
-        uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: "dir/fileName.txt"
+      - name: Get App Installation Token
+        run: |
+          echo "This token is masked: ${TOKEN}"
+        env: 
+          TOKEN: ${{ steps.get_token.outputs.app_token }}
+
+      # - name: Update config.yml w/
+      #   uses: mikefarah/yq@master
+      #   with:
+      #     cmd: yq e '.key_groups.$type += [$email]' --inplace config.yml
+      #   env:
+      #     email: "${{ steps.split.outputs._0 }}"
+      #     type: "${{ steps.split.outputs._1 }}"
+
+      # - name: Create /authorized_keys SSH Key File
+      #   uses: "finnp/create-file-action@master"
+      #   env:
+      #     FILE_NAME: "/Users/williamryan/Github/t-lint/ansible/global/config.yml"
           FILE_DATA: "file content"
