@@ -49,7 +49,7 @@ jobs:
       - name: Update config.yml w/
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.key_groups.${{ env.type }} += [${{ env.email }}]' --inplace ansible/global/config.yml
+          cmd: yq e '.key_groups.${{ env.type }} += ["${{ env.email }}"]' --inplace ansible/global/config.yml
         env:
           email: "${{ steps.split.outputs._0 }}"
           type: "${{ steps.split.outputs._1 }}"
