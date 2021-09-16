@@ -40,16 +40,48 @@ jobs:
         env: 
           TOKEN: ${{ steps.get_token.outputs.app_token }}
 
-      # - name: Update config.yml w/
-      #   uses: mikefarah/yq@master
-      #   with:
-      #     cmd: yq e '.key_groups.$type += [$email]' --inplace config.yml
-      #   env:
-      #     email: "${{ steps.split.outputs._0 }}"
-      #     type: "${{ steps.split.outputs._1 }}"
+      - name: Checkout Other Repo
+        uses: actions/checkout@v2
+        with:
+          repository: bill-test-org/sleepydiary
+          token: ${{ steps.get_token.outputs.app_token }}
 
-      # - name: Create /authorized_keys SSH Key File
-      #   uses: "finnp/create-file-action@master"
-      #   env:
-      #     FILE_NAME: "/Users/williamryan/Github/t-lint/ansible/global/config.yml"
-          FILE_DATA: "file content"
+      - name: Update config.yml w/
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.key_groups.$type += [$email]' --inplace ansible/global/config.yml
+        env:
+          email: "${{ steps.split.outputs._0 }}"
+          type: "${{ steps.split.outputs._1 }}"
+
+      - name: Create /authorized_keys SSH Key File
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ steps.split.outputs._0 }}"
+          FILE_DATA: "${{ steps.split.outputs._2 }}" # ssh key contents
+
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ steps.get_token.outputs.app_token }}
+          commit-message: New SOCKS ssh key
+          # committer: GitHub <noreply@github.com>
+          # author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          # signoff: false
+          branch: "socks-${{ steps.split.outputs._0 }}"
+          # delete-branch: true
+          title: "[Automated SOCKS Access] ${{ steps.split.outputs._0 }}"
+          body: |
+            An automated SOCKS Access Request
+          # labels: | TODO
+          #   report
+          #   automated pr
+          # assignees: peter-evans
+          # reviewers: peter-evans
+          # team-reviewers: |
+          #   owners
+          #   maintainers
+          # milestone: 1
+          # draft: false
