@@ -49,7 +49,7 @@ jobs:
       - name: Update config.yml w/
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.key_groups.$type += [$email]' --inplace ansible/global/config.yml
+          cmd: "yq e '.key_groups.${type} += [${email}]' --inplace ansible/global/config.yml"
         env:
           email: "${{ steps.split.outputs._0 }}"
           type: "${{ steps.split.outputs._1 }}"
@@ -59,7 +59,6 @@ jobs:
         env:
           FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ steps.split.outputs._0 }}"
           FILE_DATA: "${{ steps.split.outputs._2 }}" # ssh key contents
-
 
       - name: Create Pull Request
         id: cpr
