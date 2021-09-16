@@ -17,40 +17,24 @@ jobs:
           reaction-type: "eyes"
           allow-edits: "false"
 
-      - name: Act on the command
-        run: echo "The command was '${{ steps.command.outputs.command-name }}' with arguments '${{ steps.command.outputs.command-arguments }}'"
-
-      # - name: Parse out email and ssh key from command
-      #   run: |
-      #     email=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
-      #     ssh_key=$(echo -e "${{ steps.command.outputs.command-arguments }}" | grep -E -o "ssh-.+")
-      #     echo "email=$email" >> $GITHUB_ENV
-      #     echo "ssh_key=$ssh_key" >> $GITHUB_ENV
-
-      # - name: Parse out the params from csv in GH comment
-      #   run: |
-      #     IN="${{ steps.command.outputs.command-arguments }}"
-      #     arr=(${IN//,/ })
-      #     echo "email=${arr[0]}" >> $GITHUB_ENV
-      #     echo "type=${arr[1]}" >> $GITHUB_ENV
-      #     echo "ssh_key=${arr[2]}" >> $GITHUB_ENV
-
-      - name: Use jungwinter/split marketplace action to split command into vars
+      - name: Split GH Comment CSV into Seperate Variables
         uses: jungwinter/split@v1
         id: split
         with:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
-      - name: Parse out vars from previous step into readable environment variables
-        run: |
-          echo "email=$email" >> $GITHUB_ENV
-          echo "type=$type" >> $GITHUB_ENV
-          echo "ssh_key=$ssh_key" >> $GITHUB_ENV
+      - name: Update config.yml w/
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.key_groups.$type += [$email]' --inplace config.yml
         env:
-          email: ${{ steps.split.outputs._0 }}
-          type: ${{ steps.split.outputs._1 }}
-          ssh_key: ${{ steps.split.outputs._2 }}
+          email: "${{ steps.split.outputs._0 }}"
+          type: "${{ steps.split.outputs._1 }}"
 
-      - name: Print var
-        run: echo "Here is the ssh key $ssh_key"
+      # use action rather than inline script to minimize risk of injection attack
+      - name: Create /authorized_keys SSH Key File
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "dir/fileName.txt"
+          FILE_DATA: "file content"
