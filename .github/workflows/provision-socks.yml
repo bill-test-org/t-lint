@@ -1,10 +1,11 @@
-name: Request Slack Removal for Offboarding Users
+name: Automatically Provision a SOCKS SSH Key
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  check_comments:
+  provision_socks:
+    if: startsWith(github.event.comment.body, '/provision_socks')
     runs-on: ubuntu-latest
     steps:
       - name: Check for command
@@ -16,6 +17,7 @@ jobs:
           reaction: "true"
           reaction-type: "eyes"
           allow-edits: "false"
+          permission-level: admin
 
       - name: Split GH Comment CSV into Seperate Variables
         uses: jungwinter/split@v1
@@ -24,9 +26,6 @@ jobs:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
-      - name: Debug print
-        run: echo $GITHUB_REPOSITORY
-
       - name: Get Token from Github App
         id: get_token
         uses: machine-learning-apps/actions-app-token@master
@@ -34,19 +33,13 @@ jobs:
           APP_PEM: ${{ secrets.GH_APP_PEM }}
           APP_ID: ${{ secrets.GH_APP_ID }}
 
-      - name: Get App Installation Token
-        run: |
-          echo "This token is masked: ${TOKEN}"
-        env: 
-          TOKEN: ${{ steps.get_token.outputs.app_token }}
-
       - name: Checkout Other Repo
         uses: actions/checkout@v2
         with:
           repository: bill-test-org/sleepydiary
           token: ${{ steps.get_token.outputs.app_token }}
 
-      - name: Update config.yml
+      - name: Update global config.yml
         uses: mikefarah/yq@master
         with:
           cmd: yq e '.key_groups.${{ env.type }} += ["${{ env.email }}"]' --inplace ansible/global/config.yml
