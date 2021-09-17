@@ -56,14 +56,14 @@ jobs:
         with:
           cmd: yq e '.key_groups.${{ env.type }} += ["${{ env.email }}"]' --inplace ansible/global/config.yml
         env:
-          email: "${{ steps.split.outputs._0 }}"
-          type: "${{ steps.split.outputs._1 }}"
+          email: "${{ needs.gather_inputs.outputs.email }}"
+          type: "${{ needs.gather_inputs.outputs.type }}"
 
       - name: Create /authorized_keys SSH Key File
         uses: "finnp/create-file-action@master"
         env:
-          FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ steps.split.outputs._0 }}"
-          FILE_DATA: "${{ steps.split.outputs._2 }}" # ssh key contents
+          FILE_NAME: "ansible/roles/dsva-config/files/authorized_keys/${{ needs.gather_inputs.outputs.email }}"
+          FILE_DATA: "${{ needs.gather_inputs.outputs.ssh_key }}"
 
       - name: Create Pull Request
         id: cpr
@@ -71,8 +71,8 @@ jobs:
         with:
           token: ${{ steps.get_token.outputs.app_token }}
           commit-message: New SOCKS ssh key
-          branch: "socks-${{ steps.split.outputs._0 }}"
-          title: "[Automated SOCKS Access] ${{ steps.split.outputs._0 }}"
+          branch: "socks-${{ needs.gather_inputs.outputs.email }}"
+          title: "[Automated SOCKS Access] ${{ needs.gather_inputs.outputs.email }}"
           body: |
             An automated SOCKS Access Request
 
