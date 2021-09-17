@@ -79,6 +79,5 @@ jobs:
             - ${{ github.event.issue.html_url }}
 
             Triggered by: @${{ github.event.comment.user.login }} in [this comment](${{ github.event.comment.html_url }})
-          # labels: | TODO
-          #   report
-          #   automated pr
+          labels: |
+            automated-socks-request
