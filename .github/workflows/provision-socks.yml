@@ -4,9 +4,13 @@ on:
     types: [created]
 
 jobs:
-  provision_socks:
+  gather_inputs:
     if: startsWith(github.event.comment.body, '/provision_socks')
     runs-on: ubuntu-latest
+    outputs:
+      email: ${{ steps.split.outputs._0 }}
+      type: ${{ steps.split.outputs._1 }}
+      ssh_key: ${{ steps.split.outputs._2 }}
     steps:
       - name: Check for command
         uses: xt0rted/slash-command-action@v1
@@ -26,6 +30,14 @@ jobs:
           seperator: ", "
           msg: "${{ steps.command.outputs.command-arguments }}"
 
+  start_pr:
+    needs: gather_inputs
+    if: |
+      needs.gather_inputs.outputs.email != '' &&
+      needs.gather_inputs.outputs.type != '' &&
+      needs.gather_inputs.outputs.type != ''
+    runs-on: ubuntu-latest
+    steps:
       - name: Get Token from Github App
         id: get_token
         uses: machine-learning-apps/actions-app-token@master
