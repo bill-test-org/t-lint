@@ -1,0 +1,58 @@
+name: Automatically Create PR
+on:
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  create_socks_pull_request:
+    if: contains(github.event.issue.labels.*.name, 'ops-access-request')
+
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: omgitsbillryan/t-lint
+      #     token: ${{ secrets.GIT_API_TOKEN }}
+
+      - name: Printing through context
+        run: |
+          echo ${{ github.event_path }}
+
+      # email=$(echo -e "${{ github.event.issue.body }}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | head -1)
+      - name: Sanitize Input
+        run: |
+          import json
+          import os
+          import re
+          with open('${{ github.event_path }}') as fh:
+              event = json.load(fh)
+          pr_body = event['issue']['body'].replace("\r\n", "").strip()
+          ssh_key = re.findall("(?<=```).*(?=```)", pr_body)[0]
+
+
+
+
+          with open(os.environ['GITHUB_ENV'], 'a') as fh:
+            print(f'SANITIZED_PR_BODY={escaped}', file=fh)
+        shell: python3 {0}
+
+      - name: Print sanitized output
+        run: |
+          echo "$SANITIZED_PR_BODY"
+
+      - name: Print stuff
+        run: echo ${{ github.event.issue.body }}
+
+      # - name: Read Email Address & SSH Key from Access Request GH Issue
+      #   run: |
+      #     echo ${{ github.event.issue.body }} >> pr_body.txt
+      #     SANITIZED=${${{ github.event.issue.body }}//[^a-zA-Z0-9_]/}
+      #     echo $SANITIZED
+
+
+      # - name: Set foobar to cool
+      #   uses: mikefarah/yq@master
+      #   with:
+      #     cmd: yq e '.key_groups.developers += ["${{env.email}}"]' --inplace config.yml
+
