@@ -1,0 +1,17 @@
+---
+name: Test cross-repo workflow share
+
+on:
+  workflow_call:
+    inputs:
+      your_name:
+        type: string
+        required: false
+        description: 'Name to say hello to'
+        default: 'Bob'
+
+jobs:
+  say_hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello, ${{ inputs.your_name }}"
